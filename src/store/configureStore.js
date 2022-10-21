@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import toDoList from "./modules/toDoList";
 
+import comments from "../store/modules/commentSlice";
 
 const store = configureStore({
-    reducer: {
-        toDoList:toDoList.reducer,
-    }
+  reducer: {
+    comments: comments,
+  },
 });
 
 export default store;
