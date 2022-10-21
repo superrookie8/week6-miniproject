@@ -1,14 +1,23 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Detail from "../src/pages/Detail";
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import { Provider } from "react-redux";
+
+import store from "./store/configureStore";
+import Auth from "./pages/Auth";
+import Main from "./pages/Main";
+import Detail from "./pages/Detail"
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/detail" element={<Detail />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Auth/>} />
+          <Route path="/main" element={<Main/>}/>
+          <Route path="/detail" element={<Detail/>}/>
+        </Routes>
+      </Router>
+    </Provider>
   );
 }
 

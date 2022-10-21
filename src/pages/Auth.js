@@ -1,8 +1,10 @@
-import React from "react";
-import styled from "styled-components";
+
+import Login from "../components/Login";
 
 const Auth = () => {
-  return <></>;
-};
+  return (
+    <Login/>
+  );
+}
 
 export default Auth;
