@@ -8,7 +8,6 @@ const Detail = () => (
   <Layout>
     <Header />
     <DetailBoard />
-    <Comments />
   </Layout>
 );
 

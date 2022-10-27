@@ -1,82 +1,106 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { __postCom } from "../../../store/modules/commentSlice";
+import { useDispatch } from "react-redux";
+import {
+  __deleteCom,
+  __postCom,
+  __getCom,
+} from "../../../store/modules/commentSlice";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
-const DetailComment = () => {
+const Comments = () => {
+  const data = useSelector((state) => state.comments.comments);
+  const dispatch = useDispatch();
+  const { id } = useParams();
   const initialState = {
     id: 0,
-    comment: "",
-    nickname: "",
-    // postId: postId,
+    content: "",
+    nickName: "",
+    createAt: "",
+    postId: id,
   };
 
   const [com, setCom] = useState(initialState);
-  const comments = useSelector((state) => state.comments.comments);
 
-  // useEffect(()=>{
-  //   dispatch()
-  // })
+  // console.log(data);
+
+  useEffect(() => {
+    dispatch(__getCom(id));
+  }, [dispatch, id]);
 
   const onChangeHandler = (e) => {
-    setCom(e.target.value);
-    console.log(com);
+    const { name, value } = e.target;
+    setCom({ ...com, [name]: value });
   };
-  const dispatch = useDispatch();
+
   const onSubmitHandler = (e) => {
     e.preventDefault();
-    if (com.comment === "") {
+    if (com.content === "") {
       alert("내용을 입력하세요");
       return;
     }
-    dispatch(__postCom({ comments: com }));
+
+    dispatch(__postCom([id, {"content":com.content}]));
     setCom(initialState);
     return;
   };
+
+  const onDeleteHandler = (ids) => {
+    dispatch(__deleteCom([id, ids]));
+    alert("삭제완료!");
+    dispatch(__getCom(id));
+  };
+
   return (
-    <AllContainer onSubmit={onSubmitHandler}>
+    <AllContainer>
       <InputContainer>
         <InputWcover>
           <InputWriter
             type="text"
-            name="comment"
-            key="id"
+            name="content"
+            key="createAt"
+            value={com.content}
             onChange={onChangeHandler}
           />
         </InputWcover>
         <PbCover>
-          <PushButton onClick={() => {}}>입력</PushButton>
+          <PushButton onClick={onSubmitHandler}>입력</PushButton>
         </PbCover>
       </InputContainer>
       <CommentContainer>
-        <CommentBox>
-          <CommentStyle>
-            댓글-----------------------------------------------
-            -------------------------------------------------
-            ------------------- ------------------
-          </CommentStyle>
-        </CommentBox>
-        <CdbCover>
-          <CommentDeleteButton>삭제</CommentDeleteButton>
-        </CdbCover>
+        {data?.map((coms) => {
+          // console.log(coms);
+          return (
+            <div>
+              <CommentBox key={coms.id}>
+                <CommentStyle>{coms.comment}</CommentStyle>
+                <CommentDeleteButton
+                  onClick={() => {
+                    onDeleteHandler(coms.id);
+                  }}
+                >
+                  삭제
+                </CommentDeleteButton>
+              </CommentBox>
+            </div>
+          );
+        })}
       </CommentContainer>
     </AllContainer>
   );
 };
 
-export default DetailComment;
+export default Comments;
 
 const AllContainer = styled.form`
   width: 100%;
   max-width: 1150px;
   height: 400px;
-  /* background-color: red; */
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* border: 1px solid red; */
-  /* padding: 30px; */
 `;
 
 const InputContainer = styled.div`
@@ -90,7 +114,6 @@ const InputContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  /* background-color: red; */
 `;
 
 const InputWcover = styled.div`
@@ -100,13 +123,11 @@ const InputWcover = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-color: pink; */
 `;
 const InputWriter = styled.input`
   width: 100%;
   max-width: 880px;
   height: 30px;
-  /* background-color: blue; */
   border-radius: 30px;
 `;
 
@@ -117,7 +138,6 @@ const PbCover = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-color: skyblue; */
 `;
 const PushButton = styled.button`
   width: 100%;
@@ -139,20 +159,18 @@ const CommentContainer = styled.div`
   max-width: 1150px;
   height: 320px;
   border: 3px solid gray;
-  /* background-color: gray; */
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
+
   overflow: auto;
   border-radius: 10px;
 `;
 
 const CommentBox = styled.div`
   width: 100%;
-  max-width: 950px;
+  max-width: 1150px;
   height: 50px;
   border-bottom: 1px solid gray;
-  /* background-color: blueviolet; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -163,21 +181,11 @@ const CommentStyle = styled.div`
   width: 100%;
   max-width: 900px;
   height: 45px;
-  /* border: 1px solid pink; */
   overflow: auto;
   display: flex;
   align-items: center;
 `;
 
-const CdbCover = styled.div`
-  width: 100%;
-  max-width: 100px;
-  height: 50px;
-  /* background-color: beige; */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
 const CommentDeleteButton = styled.div`
   width: 100%;
   max-width: 70px;
